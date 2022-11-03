@@ -21,11 +21,13 @@ public final class Lexer {
       if (characterType != lastParsedType && lastParsedType != null) {
         tokens.add(new Token(lastParsedType, builder.toString()));
         builder.delete(0, builder.length());
+        checkForNegativeNumber(tokens);
       }
       builder.append(character);
       lastParsedType = characterType;
     }
     tokens.add(new Token(lastParsedType, builder.toString()));
+    checkForNegativeNumber(tokens);
     return tokens;
   }
 
@@ -33,10 +35,39 @@ public final class Lexer {
     if (Character.isDigit(character)) {
       return Type.NUMBER;
     }
-    if (character == '+') {
+    if (character == '+' || character == '-') {
       return Type.OPERATOR;
     }
     throw new CalculatorException("Cannot parse [%s] into a valid token".formatted(character));
+  }
+
+  private void checkForNegativeNumber(final List<Token> tokens) {
+    if (tokens.size() < 2) {
+      return;
+    }
+
+    val lastToken = tokens.get(tokens.size() - 1);
+    if (lastToken.getType() != Type.NUMBER) {
+      return;
+    }
+
+    val previousToken = tokens.get(tokens.size() - 2);
+    val previousValue = previousToken.getValue();
+    if (previousToken.getType() != Type.OPERATOR
+        || !previousValue.endsWith("-")
+        || (previousValue.length() == 1 && tokens.size() > 2)) {
+      return;
+    }
+
+    tokens.remove(tokens.size() - 1); // remove lastToken
+    tokens.remove(tokens.size() - 1); // remove previousToken
+    if (previousValue.length() > 1) {
+      tokens.add(new Token(
+          previousToken.getType(),
+          previousValue.substring(0, previousValue.length() - 1)
+      ));
+    }
+    tokens.add(new Token(lastToken.getType(), "-" + lastToken.getValue()));
   }
 
 }

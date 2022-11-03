@@ -49,10 +49,14 @@ class CalculatorTest {
 
   static Stream<Arguments> problemProvider() {
     return Stream.of(
+        Arguments.of("1", "1"),
         Arguments.of("31 + 11", "42"),
         Arguments.of("12+20", "32"),
         Arguments.of("321+ 123", "444"),
-        Arguments.of("1 + 2 + 3 + 4", "10")
+        Arguments.of("1 + 2 + 3 + 4", "10"),
+        Arguments.of("1 + 2 - 3 + 4", "4"),
+        Arguments.of("-1", "-1"),
+        Arguments.of("1 + -2", "-1")
     );
   }
 

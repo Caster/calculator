@@ -40,8 +40,9 @@ public final class AbstractSyntaxTree {
     }
     return switch (value.getValue()) {
       case "+" -> leftChild.compute() + rightChild.compute();
+      case "-" -> leftChild.compute() - rightChild.compute();
       default -> throw new CalculatorException(
-          "Operator [%s] is not yet implemented fully".formatted(value.getValue())
+          "Unknown operator [%s]".formatted(value.getValue())
       );
     };
   }
