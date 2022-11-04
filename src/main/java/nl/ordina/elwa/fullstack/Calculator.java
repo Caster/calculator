@@ -1,5 +1,7 @@
 package nl.ordina.elwa.fullstack;
 
+import static java.util.Optional.ofNullable;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,35 +22,48 @@ public final class Calculator {
   private final BufferedWriter output;
   private final Lexer lexer;
 
+  /**
+   * Construct a calculator that will read its input from the given {@link Reader} and will write
+   * prompts and solutions to the given {@link Writer}.
+   */
   public Calculator(final Reader input, final Writer output) {
     this.input = new BufferedReader(input);
     this.output = new BufferedWriter(output);
     this.lexer = new Lexer();
   }
 
-  public void compute() throws CalculatorException {
+  /**
+   * Write a prompt, read a problem, compute and write the solution.
+   */
+  public void compute() {
     write("> ");
     val problem = read();
     if ("quit".equals(problem)) {
       throw new CalculatorException("quit");
     }
     log.info("Solving [%s]...".formatted(problem));
+
     val tokens = lexer.lex(problem);
+    if (tokens.size() == 0) {
+      log.info("Computed [%s] = []".formatted(problem));
+      return;
+    }
+
     val syntaxTree = new Parser(tokens).parse();
     final double solution = syntaxTree.compute();
     write("%.0f%n".formatted(solution));
     log.info("Computed [%s] = [%.0f]".formatted(problem, solution));
   }
 
-  private String read() throws CalculatorException {
+  private String read() {
     try {
-      return input.readLine();
+      return ofNullable(input.readLine()).orElse("");
     } catch (final IOException ioe) {
       throw new CalculatorException("Could not read input", ioe);
     }
   }
 
-  private void write(final String message) throws CalculatorException {
+  private void write(final String message) {
     try {
       output.write(message);
       output.flush();
@@ -60,6 +75,9 @@ public final class Calculator {
     }
   }
 
+  /**
+   * Run a calculator, letting it {@link #compute()} until it encounters an error or quits.
+   */
   @SuppressWarnings({"java:S106", "java:S2189"})
   public static void main(String... args) {
     val calculator = new Calculator(

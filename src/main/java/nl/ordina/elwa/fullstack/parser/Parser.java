@@ -4,8 +4,11 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
+import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
 import nl.ordina.elwa.fullstack.lexer.Token;
+import nl.ordina.elwa.fullstack.lexer.Token.OperatorToken;
+import nl.ordina.elwa.fullstack.lexer.Token.Type;
 
 public final class Parser {
 
@@ -15,7 +18,10 @@ public final class Parser {
     tokensLeft = new ArrayDeque<>(tokens);
   }
 
-  public AbstractSyntaxTree parse() throws CalculatorException {
+  /**
+   * Parse the list of tokens given at construction time into an {@link AbstractSyntaxTree}.
+   */
+  public AbstractSyntaxTree parse() {
     var tree = parseValue();
     while (!tokensLeft.isEmpty()) {
       tree = parseExpression(tree);
@@ -23,11 +29,11 @@ public final class Parser {
     return tree;
   }
 
-  private AbstractSyntaxTree parseValue() throws CalculatorException {
+  private AbstractSyntaxTree parseValue() {
     return AbstractSyntaxTree.leaf(nextToken());
   }
 
-  private Token nextToken() throws CalculatorException {
+  private Token nextToken() {
     try {
       return tokensLeft.pop();
     } catch (final NoSuchElementException e) {
@@ -35,9 +41,15 @@ public final class Parser {
     }
   }
 
-  private AbstractSyntaxTree parseExpression(final AbstractSyntaxTree leftHandSide)
-      throws CalculatorException {
-    return AbstractSyntaxTree.node(leftHandSide, nextToken(), parseValue());
+  private AbstractSyntaxTree parseExpression(final AbstractSyntaxTree leftHandSide) {
+    val token = nextToken();
+    if (token.getType() != Type.OPERATOR) {
+      throw new CalculatorException("Expected an operator, got [%s]".formatted(token));
+    }
+    if (leftHandSide.hasLowerPriorityThan((OperatorToken) token)) {
+      return leftHandSide.withReplacedRightChild(token, parseValue());
+    }
+    return AbstractSyntaxTree.node(leftHandSide, token, parseValue());
   }
 
 }

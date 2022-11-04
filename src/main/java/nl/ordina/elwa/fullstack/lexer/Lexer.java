@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
+import nl.ordina.elwa.fullstack.lexer.Token.NumberToken;
+import nl.ordina.elwa.fullstack.lexer.Token.OperatorToken;
 import nl.ordina.elwa.fullstack.lexer.Token.Type;
 
 public final class Lexer {
 
-  public List<Token> lex(final String input) throws CalculatorException {
+  /**
+   * Transform the given input into a list of tokens that can be parsed further.
+   */
+  public List<Token> lex(final String input) {
     val tokens = new ArrayList<Token>();
     val builder = new StringBuilder();
     Type lastParsedType = null;
@@ -19,23 +24,25 @@ public final class Lexer {
 
       val characterType = typeOf(character);
       if (characterType != lastParsedType && lastParsedType != null) {
-        tokens.add(new Token(lastParsedType, builder.toString()));
+        tokens.add(Token.of(lastParsedType, builder.toString()));
         builder.delete(0, builder.length());
         checkForNegativeNumber(tokens);
       }
       builder.append(character);
       lastParsedType = characterType;
     }
-    tokens.add(new Token(lastParsedType, builder.toString()));
-    checkForNegativeNumber(tokens);
+    if (lastParsedType != null && builder.length() > 0) {
+      tokens.add(Token.of(lastParsedType, builder.toString()));
+      checkForNegativeNumber(tokens);
+    }
     return tokens;
   }
 
-  private Type typeOf(final char character) throws CalculatorException {
+  private Type typeOf(final char character) {
     if (Character.isDigit(character)) {
       return Type.NUMBER;
     }
-    if (character == '+' || character == '-') {
+    if (Operator.isOperator(character)) {
       return Type.OPERATOR;
     }
     throw new CalculatorException("Cannot parse [%s] into a valid token".formatted(character));
@@ -52,22 +59,25 @@ public final class Lexer {
     }
 
     val previousToken = tokens.get(tokens.size() - 2);
-    val previousValue = previousToken.getValue();
-    if (previousToken.getType() != Type.OPERATOR
-        || !previousValue.endsWith("-")
-        || (previousValue.length() == 1 && tokens.size() > 2)) {
+    if (previousToken.getType() != Type.OPERATOR) {
+      return;
+    }
+    val lastOperator = (OperatorToken) previousToken;
+    val operatorValue = lastOperator.getOperator().getValue();
+    if (!operatorValue.endsWith("-")
+        || (operatorValue.length() == 1 && tokens.size() > 2)) {
       return;
     }
 
     tokens.remove(tokens.size() - 1); // remove lastToken
     tokens.remove(tokens.size() - 1); // remove previousToken
-    if (previousValue.length() > 1) {
-      tokens.add(new Token(
-          previousToken.getType(),
-          previousValue.substring(0, previousValue.length() - 1)
+    if (operatorValue.length() > 1) {
+      tokens.add(Token.of(
+          Type.OPERATOR,
+          operatorValue.substring(0, operatorValue.length() - 1)
       ));
     }
-    tokens.add(new Token(lastToken.getType(), "-" + lastToken.getValue()));
+    tokens.add(Token.of(Type.NUMBER, "-" + ((NumberToken) lastToken).getValue()));
   }
 
 }
