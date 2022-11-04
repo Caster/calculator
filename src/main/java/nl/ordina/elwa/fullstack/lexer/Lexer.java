@@ -39,7 +39,7 @@ public final class Lexer {
   }
 
   private Type typeOf(final char character) {
-    if (Character.isDigit(character)) {
+    if (Character.isDigit(character) || character == '.') {
       return Type.NUMBER;
     }
     if (Operator.isOperator(character)) {

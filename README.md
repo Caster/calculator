@@ -31,4 +31,4 @@ increasing levels of complexity.
     need to change?
     - Now your calculator should be able to compute that `0.5 * 4 = 2`.
 
-This repository contains an example implementation of a **V5** calculator.
+This repository contains an example implementation of a **V6** calculator.
