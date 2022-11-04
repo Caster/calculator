@@ -59,7 +59,10 @@ class CalculatorTest {
         Arguments.of("1 + -2", "-1"),
         Arguments.of("3 * 2", "6"),
         Arguments.of("1 + 3 * 2", "7"),
-        Arguments.of("1 + 3 * 2 - 1", "6")
+        Arguments.of("1 + 3 * 2 - 1", "6"),
+        Arguments.of("8 / 4", "2"),
+        Arguments.of("3 + 8 / 4", "5"),
+        Arguments.of("3 + 8 / 3 - 5", "0.66667")
     );
   }
 

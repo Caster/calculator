@@ -25,7 +25,8 @@ public final class Operator implements ToDoubleBiFunction<AbstractSyntaxTree, Ab
   public static final List<Operator> OPERATORS = List.of(
       new Operator("+", 1, Double::sum),
       new Operator("-", 1, (a, b) -> a - b),
-      new Operator("*", 2, (a, b) -> a * b)
+      new Operator("*", 2, (a, b) -> a * b),
+      new Operator("/", 2, (a, b) -> a / b)
   );
 
   public static boolean isOperator(final char character) {

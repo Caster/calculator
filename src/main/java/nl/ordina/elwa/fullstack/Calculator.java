@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.text.DecimalFormat;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
@@ -17,6 +18,8 @@ import nl.ordina.elwa.fullstack.parser.Parser;
 
 @Slf4j
 public final class Calculator {
+
+  private static final DecimalFormat FORMAT = new DecimalFormat("#.#####");
 
   private final BufferedReader input;
   private final BufferedWriter output;
@@ -51,8 +54,8 @@ public final class Calculator {
 
     val syntaxTree = new Parser(tokens).parse();
     final double solution = syntaxTree.compute();
-    write("%.0f%n".formatted(solution));
-    log.info("Computed [%s] = [%.0f]".formatted(problem, solution));
+    write("%s%n".formatted(FORMAT.format(solution)));
+    log.info("Computed [%s] = [%s]".formatted(problem, FORMAT.format(solution)));
   }
 
   private String read() {
