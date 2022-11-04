@@ -44,7 +44,9 @@ public final class Parser {
   private AbstractSyntaxTree parseExpression(final AbstractSyntaxTree leftHandSide) {
     val token = nextToken();
     if (token.getType() != Type.OPERATOR) {
-      throw new CalculatorException("Expected an operator, got [%s]".formatted(token));
+      throw new CalculatorException(
+          "Expected an operator, got [%s]".formatted(token), token.getIndex()
+      );
     }
     if (leftHandSide.hasLowerPriorityThan((OperatorToken) token)) {
       return leftHandSide.withReplacedRightChild(token, parseValue());

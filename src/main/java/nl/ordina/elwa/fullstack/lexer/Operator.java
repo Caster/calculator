@@ -39,12 +39,12 @@ public final class Operator implements ToDoubleBiFunction<AbstractSyntaxTree, Ab
    * freshly constructed operator that will throw an exception when it is
    * {@link #applyAsDouble(AbstractSyntaxTree, AbstractSyntaxTree) applied}.
    */
-  public static Operator of(final String value) {
+  public static Operator of(final String value, final int index) {
     return OPERATORS.stream()
         .filter(operator -> operator.value.equals(value))
         .findFirst()
         .orElse(new Operator(value, 0, (a, b) -> {
-          throw new CalculatorException("Unknown operator [%s]".formatted(value));
+          throw new CalculatorException("Unknown operator [%s]".formatted(value), index);
         }));
   }
 

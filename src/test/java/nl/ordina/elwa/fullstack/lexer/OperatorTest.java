@@ -17,7 +17,7 @@ class OperatorTest {
 
   @Test
   void of() {
-    assertEquals(OPERATORS.get(0), Operator.of("+"));
+    assertEquals(OPERATORS.get(0), Operator.of("+", 0));
   }
 
   @Test

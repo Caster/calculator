@@ -1,6 +1,7 @@
 package nl.ordina.elwa.fullstack;
 
 import static java.util.Optional.ofNullable;
+import static nl.ordina.elwa.fullstack.lexer.Token.NumberToken.format;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.text.DecimalFormat;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
@@ -18,8 +18,6 @@ import nl.ordina.elwa.fullstack.parser.Parser;
 
 @Slf4j
 public final class Calculator {
-
-  private static final DecimalFormat FORMAT = new DecimalFormat("#.#####");
 
   private final BufferedReader input;
   private final BufferedWriter output;
@@ -46,16 +44,28 @@ public final class Calculator {
     }
     log.info("Solving [%s]...".formatted(problem));
 
-    val tokens = lexer.lex(problem);
-    if (tokens.size() == 0) {
-      log.info("Computed [%s] = []".formatted(problem));
-      return;
-    }
+    try {
+      val tokens = lexer.lex(problem);
+      if (tokens.size() == 0) {
+        log.info("Computed [%s] = []".formatted(problem));
+        return;
+      }
 
-    val syntaxTree = new Parser(tokens).parse();
-    final double solution = syntaxTree.compute();
-    write("%s%n".formatted(FORMAT.format(solution)));
-    log.info("Computed [%s] = [%s]".formatted(problem, FORMAT.format(solution)));
+      val syntaxTree = new Parser(tokens).parse();
+      final double solution = syntaxTree.compute();
+      write("%s%n".formatted(format(solution)));
+      log.info("Computed [%s] = [%s]".formatted(problem, format(solution)));
+    } catch (final CalculatorException ce) {
+      if (ce.getProblemIndex() >= 0) {
+        write("%s┗ %s%n".formatted(
+            " ".repeat(2 + ce.getProblemIndex()),
+            ce.getMessage()
+        ));
+      } else {
+        write("%s%n".formatted(ce.getMessage()));
+      }
+      throw ce;
+    }
   }
 
   private String read() {
@@ -90,8 +100,9 @@ public final class Calculator {
       try {
         calculator.compute();
       } catch (final CalculatorException ce) {
-        System.out.println(ce.getMessage());
-        break;
+        if ("quit".equals(ce.getMessage())) {
+          break;
+        }
       }
     }
   }

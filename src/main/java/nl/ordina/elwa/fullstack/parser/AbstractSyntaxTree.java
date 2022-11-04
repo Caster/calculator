@@ -35,7 +35,7 @@ public final class AbstractSyntaxTree {
    */
   public static AbstractSyntaxTree leaf(@NonNull final Token token) {
     if (token.getType() != Type.NUMBER) {
-      throw new CalculatorException("Can only have numbers as leaves of an AST");
+      throw new CalculatorException("Can only have numbers as leaves of an AST", token.getIndex());
     }
     return new AbstractSyntaxTree(null, null, token);
   }
@@ -49,7 +49,7 @@ public final class AbstractSyntaxTree {
       @NonNull final AbstractSyntaxTree rightChild
   ) {
     if (token.getType() != Type.OPERATOR) {
-      throw new CalculatorException("Can only have operators as nodes of an AST");
+      throw new CalculatorException("Can only have operators as nodes of an AST", token.getIndex());
     }
     return new AbstractSyntaxTree(leftChild, rightChild, token);
   }

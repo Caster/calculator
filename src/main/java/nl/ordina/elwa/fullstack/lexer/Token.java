@@ -2,9 +2,12 @@ package nl.ordina.elwa.fullstack.lexer;
 
 import static lombok.AccessLevel.PROTECTED;
 
+import java.text.DecimalFormat;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+import nl.ordina.elwa.fullstack.exception.CalculatorException;
 
 @RequiredArgsConstructor(access = PROTECTED)
 public sealed class Token {
@@ -16,6 +19,8 @@ public sealed class Token {
 
   @Getter
   private final Type type;
+  @Getter
+  private final int index;
 
   /**
    * Returns a token for the given type and input.
@@ -23,20 +28,35 @@ public sealed class Token {
    * @see NumberToken
    * @see OperatorToken
    */
-  public static Token of(@NonNull final Type type, @NonNull final String input) {
+  public static Token of(@NonNull final Type type, @NonNull final String input, final int index) {
     return switch (type) {
-      case NUMBER -> new NumberToken(input);
-      case OPERATOR -> new OperatorToken(input);
+      case NUMBER -> new NumberToken(input, index);
+      case OPERATOR -> new OperatorToken(input, index);
     };
   }
 
   public static final class NumberToken extends Token {
 
+    private static final DecimalFormat FORMAT = new DecimalFormat("#.#####");
+
+    public static String format(final double value) {
+      return FORMAT.format(value);
+    }
+
     private final double value;
 
-    private NumberToken(final String input) {
-      super(Type.NUMBER);
-      this.value = Double.parseDouble(input);
+    private NumberToken(final String input, final int index) {
+      super(Type.NUMBER, index);
+      try {
+        this.value = Double.parseDouble(input);
+      } catch (final NumberFormatException nfe) {
+        if ("multiple points".equals(nfe.getMessage())) {
+          val firstPoint = input.indexOf('.');
+          val secondPoint = input.indexOf('.', firstPoint + 1);
+          throw new CalculatorException(nfe.getMessage(), index + secondPoint, nfe);
+        }
+        throw new CalculatorException(nfe.getMessage(), index, nfe);
+      }
     }
 
     public double getValue() {
@@ -45,17 +65,18 @@ public sealed class Token {
 
     @Override
     public String toString() {
-      return String.valueOf(value);
+      return format(value);
     }
+
   }
 
   public static final class OperatorToken extends Token {
 
     private final Operator operator;
 
-    private OperatorToken(final String input) {
-      super(Type.OPERATOR);
-      this.operator = Operator.of(input);
+    private OperatorToken(final String input, final int index) {
+      super(Type.OPERATOR, index);
+      this.operator = Operator.of(input, index);
     }
 
     public Operator getOperator() {

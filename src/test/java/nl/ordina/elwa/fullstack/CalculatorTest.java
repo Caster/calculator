@@ -56,6 +56,7 @@ class CalculatorTest {
         Arguments.of("1 + 2 + 3 + 4", "10"),
         Arguments.of("1 + 2 - 3 + 4", "4"),
         Arguments.of("-1", "-1"),
+        Arguments.of("1 +-2", "-1"),
         Arguments.of("1 + -2", "-1"),
         Arguments.of("3 * 2", "6"),
         Arguments.of("1 + 3 * 2", "7"),
