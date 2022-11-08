@@ -30,5 +30,9 @@ increasing levels of complexity.
   - **V6**: add rational numbers to your **V5** calculator. How much code do you
     need to change?
     - Now your calculator should be able to compute that `0.5 * 4 = 2`.
+  - **V7**: add brackets to your **V6** calculator. How much code do you need to
+    change?
+    - Now your calculator should be able to compute that `(1 + 2) * 3 = 9` (and
+      not `7`).
 
-This repository contains an example implementation of a **V6** calculator.
+This repository contains an example implementation of a **V7** calculator.

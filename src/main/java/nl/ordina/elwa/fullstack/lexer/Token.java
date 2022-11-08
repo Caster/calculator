@@ -14,7 +14,8 @@ public sealed class Token {
 
   public enum Type {
     NUMBER,
-    OPERATOR
+    OPERATOR,
+    BRACKET
   }
 
   @Getter
@@ -32,6 +33,7 @@ public sealed class Token {
     return switch (type) {
       case NUMBER -> new NumberToken(input, index);
       case OPERATOR -> new OperatorToken(input, index);
+      case BRACKET -> new BracketToken(input, index);
     };
   }
 
@@ -88,6 +90,25 @@ public sealed class Token {
       return String.valueOf(operator.getValue());
     }
 
+  }
+
+  public static final class BracketToken extends Token {
+
+    private final boolean isOpen;
+
+    private BracketToken(final String input, final int index) {
+      super(Type.BRACKET, index);
+      this.isOpen = "(".equals(input);
+    }
+
+    public boolean isOpen() {
+      return isOpen;
+    }
+
+    @Override
+    public String toString() {
+      return (isOpen ? "(" : ")");
+    }
   }
 
 }
