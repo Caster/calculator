@@ -64,7 +64,11 @@ class CalculatorTest {
         Arguments.of("8 / 4", "2"),
         Arguments.of("3 + 8 / 4", "5"),
         Arguments.of("3 + 8 / 3 - 5", "0.66667"),
-        Arguments.of("0.5 * 4", "2")
+        Arguments.of("0.5 * 4", "2"),
+        Arguments.of("(42)", "42"),
+        Arguments.of("(12 + 21)", "33"),
+        Arguments.of("(1 + 3) * 2", "8"),
+        Arguments.of("14 - ((1 + 3) * 3)", "2")
     );
   }
 

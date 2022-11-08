@@ -1,5 +1,6 @@
 package nl.ordina.elwa.fullstack.parser;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
@@ -26,9 +27,11 @@ public final class AbstractSyntaxTree {
         3   5   4
    */
 
-  public final AbstractSyntaxTree leftChild;
-  public final AbstractSyntaxTree rightChild;
-  public final Token token;
+  private final AbstractSyntaxTree leftChild;
+  private final AbstractSyntaxTree rightChild;
+  private final Token token;
+  @Getter
+  private final boolean bracketed;
 
   /**
    * Construct a leaf node that holds a {@link NumberToken number token}.
@@ -37,7 +40,7 @@ public final class AbstractSyntaxTree {
     if (token.getType() != Type.NUMBER) {
       throw new CalculatorException("Can only have numbers as leaves of an AST", token.getIndex());
     }
-    return new AbstractSyntaxTree(null, null, token);
+    return new AbstractSyntaxTree(null, null, token, false);
   }
 
   /**
@@ -46,20 +49,31 @@ public final class AbstractSyntaxTree {
   public static AbstractSyntaxTree node(
       @NonNull final AbstractSyntaxTree leftChild,
       @NonNull final Token token,
-      @NonNull final AbstractSyntaxTree rightChild
+      @NonNull final AbstractSyntaxTree rightChild,
+      @NonNull final boolean bracketed
   ) {
     if (token.getType() != Type.OPERATOR) {
       throw new CalculatorException("Can only have operators as nodes of an AST", token.getIndex());
     }
-    return new AbstractSyntaxTree(leftChild, rightChild, token);
+    return new AbstractSyntaxTree(leftChild, rightChild, token, bracketed);
   }
 
   private AbstractSyntaxTree(
-      final AbstractSyntaxTree leftChild, final AbstractSyntaxTree rightChild, final Token token
+      final AbstractSyntaxTree leftChild, final AbstractSyntaxTree rightChild,
+      final Token token, final boolean bracketed
   ) {
     this.leftChild = leftChild;
     this.rightChild = rightChild;
     this.token = token;
+    this.bracketed = bracketed;
+  }
+
+  /**
+   * Return a shallow copy of this {@link AbstractSyntaxTree} where the {@link #isBracketed()} is
+   * marked {@code true}. Will still return a shallow copy if the node is already bracketed.
+   */
+  public AbstractSyntaxTree bracketed() {
+    return new AbstractSyntaxTree(leftChild, rightChild, token, true);
   }
 
   /**
@@ -107,8 +121,10 @@ public final class AbstractSyntaxTree {
         node(
             rightChild,
             rightToken,
-            rightGrandChild
-        )
+            rightGrandChild,
+            false
+        ),
+        false
     );
   }
 

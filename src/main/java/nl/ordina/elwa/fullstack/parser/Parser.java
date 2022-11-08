@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
 import nl.ordina.elwa.fullstack.lexer.Token;
+import nl.ordina.elwa.fullstack.lexer.Token.BracketToken;
 import nl.ordina.elwa.fullstack.lexer.Token.OperatorToken;
 import nl.ordina.elwa.fullstack.lexer.Token.Type;
 
@@ -23,14 +24,32 @@ public final class Parser {
    */
   public AbstractSyntaxTree parse() {
     var tree = parseValue();
-    while (!tokensLeft.isEmpty()) {
+    while (!tokensLeft.isEmpty() && tokensLeft.peek().getType() != Type.BRACKET) {
       tree = parseExpression(tree);
     }
     return tree;
   }
 
   private AbstractSyntaxTree parseValue() {
-    return AbstractSyntaxTree.leaf(nextToken());
+    val token = nextToken();
+    if (token.getType() == Type.NUMBER) {
+      return AbstractSyntaxTree.leaf(token);
+    }
+    if (token.getType() == Type.BRACKET && ((BracketToken) token).isOpen()) {
+      val expression = parse().bracketed();
+      val closeToken = nextToken();
+      if (closeToken.getType() != Type.BRACKET || ((BracketToken) closeToken).isOpen()) {
+        throw new CalculatorException(
+            "Expected a closing bracket, got %s%s".formatted(
+                (closeToken.getType() == Type.BRACKET ? "opening " : ""),
+                closeToken.getType().toString().toLowerCase()
+            ),
+            closeToken.getIndex()
+        );
+      }
+      return expression;
+    }
+    throw new CalculatorException("Expected a number or opening bracket", token.getIndex());
   }
 
   private Token nextToken() {
@@ -48,10 +67,10 @@ public final class Parser {
           "Expected an operator, got [%s]".formatted(token), token.getIndex()
       );
     }
-    if (leftHandSide.hasLowerPriorityThan((OperatorToken) token)) {
+    if (leftHandSide.hasLowerPriorityThan((OperatorToken) token) && !leftHandSide.isBracketed()) {
       return leftHandSide.withReplacedRightChild(token, parseValue());
     }
-    return AbstractSyntaxTree.node(leftHandSide, token, parseValue());
+    return AbstractSyntaxTree.node(leftHandSide, token, parseValue(), false);
   }
 
 }

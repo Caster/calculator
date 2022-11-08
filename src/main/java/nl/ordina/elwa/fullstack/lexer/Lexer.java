@@ -35,7 +35,8 @@ public final class Lexer {
       }
 
       val characterType = typeOf(character, i);
-      if (characterType != lastParsedType && lastParsedType != null) {
+      if (characterType == Type.BRACKET
+          || (characterType != lastParsedType && lastParsedType != null)) {
         addToken.accept(lastParsedType, i);
       }
 
@@ -55,6 +56,9 @@ public final class Lexer {
     }
     if (Operator.isOperator(character)) {
       return Type.OPERATOR;
+    }
+    if (character == '(' || character == ')') {
+      return Type.BRACKET;
     }
     throw new CalculatorException(
         "Cannot parse [%s] into a valid token".formatted(character), index
