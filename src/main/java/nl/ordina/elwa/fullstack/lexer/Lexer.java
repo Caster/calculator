@@ -44,7 +44,7 @@ public final class Lexer {
       lastParsedType = characterType;
     }
 
-    if (lastParsedType != null && builder.length() > 0) {
+    if (builder.length() > 0) {
       addToken.accept(lastParsedType, characters.length);
     }
     return tokens;

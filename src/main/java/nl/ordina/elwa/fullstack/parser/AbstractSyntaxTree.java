@@ -50,7 +50,7 @@ public final class AbstractSyntaxTree {
       @NonNull final AbstractSyntaxTree leftChild,
       @NonNull final Token token,
       @NonNull final AbstractSyntaxTree rightChild,
-      @NonNull final boolean bracketed
+      final boolean bracketed
   ) {
     if (token.getType() != Type.OPERATOR) {
       throw new CalculatorException("Can only have operators as nodes of an AST", token.getIndex());

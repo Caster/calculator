@@ -37,13 +37,10 @@ public final class Parser {
     }
     if (token.getType() == Type.BRACKET && ((BracketToken) token).isOpen()) {
       val expression = parse().bracketed();
-      val closeToken = nextToken();
-      if (closeToken.getType() != Type.BRACKET || ((BracketToken) closeToken).isOpen()) {
+      val closeToken = (BracketToken) nextToken();
+      if (closeToken.isOpen()) {
         throw new CalculatorException(
-            "Expected a closing bracket, got %s%s".formatted(
-                (closeToken.getType() == Type.BRACKET ? "opening " : ""),
-                closeToken.getType().toString().toLowerCase()
-            ),
+            "Expected a closing bracket, got opening bracket",
             closeToken.getIndex()
         );
       }

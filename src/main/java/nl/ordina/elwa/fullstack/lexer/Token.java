@@ -33,7 +33,7 @@ public sealed class Token {
     return switch (type) {
       case NUMBER -> new NumberToken(input, index);
       case OPERATOR -> new OperatorToken(input, index);
-      case BRACKET -> new BracketToken(input, index);
+      default -> new BracketToken(input, index);
     };
   }
 
@@ -52,12 +52,15 @@ public sealed class Token {
       try {
         this.value = Double.parseDouble(input);
       } catch (final NumberFormatException nfe) {
-        if ("multiple points".equals(nfe.getMessage())) {
-          val firstPoint = input.indexOf('.');
-          val secondPoint = input.indexOf('.', firstPoint + 1);
-          throw new CalculatorException(nfe.getMessage(), index + secondPoint, nfe);
-        }
-        throw new CalculatorException(nfe.getMessage(), index, nfe);
+        // The only possibility that a number we lexed is not a valid double is if it has
+        // multiple points (which coincidentally is the message of the NumberFormatException).
+        val firstPoint = input.indexOf('.');
+        val secondPoint = input.indexOf('.', firstPoint + 1);
+        throw new CalculatorException(
+            "Invalid number: %s".formatted(nfe.getMessage()),
+            index + secondPoint,
+            nfe
+        );
       }
     }
 
