@@ -56,13 +56,16 @@ public final class Calculator {
       write("%s%n".formatted(format(solution)));
       log.info("Computed [%s] = [%s]".formatted(problem, format(solution)));
     } catch (final CalculatorException ce) {
-      if (ce.getProblemIndex() >= 0) {
-        write("%s┗ %s%n".formatted(
-            " ".repeat(2 + ce.getProblemIndex()),
-            ce.getMessage()
-        ));
-      } else {
-        write("%s%n".formatted(ce.getMessage()));
+      log.error("Cannot solve [%s]: %s".formatted(problem, ce.getMessage()));
+      if (!(ce.getCause() instanceof IOException)) {
+        if (ce.getProblemIndex() >= 0) {
+          write("%s┗ %s%n".formatted(
+              " ".repeat(2 + ce.getProblemIndex()),
+              ce.getMessage()
+          ));
+        } else {
+          write("%s%n".formatted(ce.getMessage()));
+        }
       }
       throw ce;
     }
