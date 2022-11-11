@@ -20,6 +20,7 @@ increasing levels of complexity.
     to change?
     - This might also be a good time to implement negative integers.
     - Does your code understand `1 + -2`? Should it?
+    - Does your code understand `-4 -1`? Should it?
   - **V4**: add multiplication to your **V3** calculator. Be mindful of order of
     operations! How much code do you need to change?
     - Check that `3 + 2 * 5 = 13`, not `25`. 
@@ -30,6 +31,7 @@ increasing levels of complexity.
   - **V6**: add rational numbers to your **V5** calculator. How much code do you
     need to change?
     - Now your calculator should be able to compute that `0.5 * 4 = 2`.
+    - Does your code understand `-3 * -4 = 12` too?
   - **V7**: add brackets to your **V6** calculator. How much code do you need to
     change?
     - Now your calculator should be able to compute that `(1 + 2) * 3 = 9` (and
