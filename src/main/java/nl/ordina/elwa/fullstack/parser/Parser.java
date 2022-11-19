@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
-import nl.ordina.elwa.fullstack.lexer.Token;
-import nl.ordina.elwa.fullstack.lexer.Token.BracketToken;
-import nl.ordina.elwa.fullstack.lexer.Token.OperatorToken;
-import nl.ordina.elwa.fullstack.lexer.Token.Type;
+import nl.ordina.elwa.fullstack.lexer.token.BracketToken;
+import nl.ordina.elwa.fullstack.lexer.token.OperatorToken;
+import nl.ordina.elwa.fullstack.lexer.token.Token;
+import nl.ordina.elwa.fullstack.lexer.token.Token.Type;
 
 public final class Parser {
 

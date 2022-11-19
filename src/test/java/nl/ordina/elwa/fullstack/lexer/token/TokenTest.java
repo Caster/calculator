@@ -1,13 +1,12 @@
-package nl.ordina.elwa.fullstack.lexer;
+package nl.ordina.elwa.fullstack.lexer.token;
 
-import static nl.ordina.elwa.fullstack.lexer.Token.of;
+import static nl.ordina.elwa.fullstack.lexer.token.Token.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.stream.Stream;
 import lombok.val;
-import nl.ordina.elwa.fullstack.lexer.Token.BracketToken;
-import nl.ordina.elwa.fullstack.lexer.Token.Type;
+import nl.ordina.elwa.fullstack.lexer.token.Token.Type;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
