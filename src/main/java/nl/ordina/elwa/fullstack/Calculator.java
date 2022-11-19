@@ -1,7 +1,7 @@
 package nl.ordina.elwa.fullstack;
 
 import static java.util.Optional.ofNullable;
-import static nl.ordina.elwa.fullstack.lexer.Token.NumberToken.format;
+import static nl.ordina.elwa.fullstack.lexer.token.NumberToken.format;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
