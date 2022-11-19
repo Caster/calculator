@@ -22,10 +22,21 @@ public final class Parser {
   /**
    * Parse the list of tokens given at construction time into an {@link AbstractSyntaxTree}.
    */
+  @SuppressWarnings("ConstantConditions")
   public AbstractSyntaxTree parse() {
     var tree = parseValue();
-    while (!tokensLeft.isEmpty() && tokensLeft.peek().getType() != Type.BRACKET) {
-      tree = parseExpression(tree);
+    while (!tokensLeft.isEmpty()) {
+      if (tokensLeft.peek().getType() != Type.BRACKET) {
+        tree = parseExpression(tree);
+      } else if (((BracketToken) tokensLeft.peek()).isOpen()) {
+        tree = buildNode(
+            tree,
+            (OperatorToken) Token.of(Type.OPERATOR, "*", tokensLeft.peek().getIndex()),
+            parseValue()
+        );
+      } else {
+        break;
+      }
     }
     return tree;
   }
@@ -37,13 +48,7 @@ public final class Parser {
     }
     if (token.getType() == Type.BRACKET && ((BracketToken) token).isOpen()) {
       val expression = parse().bracketed();
-      val closeToken = (BracketToken) nextToken();
-      if (closeToken.isOpen()) {
-        throw new CalculatorException(
-            "Expected a closing bracket, got opening bracket",
-            closeToken.getIndex()
-        );
-      }
+      nextToken(); // Remove closing bracket; needs no check, otherwise parse() would've failed.
       return expression;
     }
     throw new CalculatorException("Expected a number or opening bracket", token.getIndex());
@@ -60,14 +65,34 @@ public final class Parser {
   private AbstractSyntaxTree parseExpression(final AbstractSyntaxTree leftHandSide) {
     val token = nextToken();
     if (token.getType() != Type.OPERATOR) {
+      if (leftHandSide.isBracketed() || (
+            leftHandSide.getToken().getType() == Type.OPERATOR
+            && leftHandSide.getRightChild().isBracketed()
+          )) {
+        tokensLeft.push(token);
+        return buildNode(
+            leftHandSide,
+            (OperatorToken) Token.of(Type.OPERATOR, "*", token.getIndex()),
+            parseValue()
+        );
+      }
+
       throw new CalculatorException(
           "Expected an operator, got [%s]".formatted(token), token.getIndex()
       );
     }
-    if (leftHandSide.hasLowerPriorityThan((OperatorToken) token) && !leftHandSide.isBracketed()) {
-      return leftHandSide.withReplacedRightChild(token, parseValue());
+    return buildNode(leftHandSide, (OperatorToken) token, parseValue());
+  }
+
+  private AbstractSyntaxTree buildNode(
+      final AbstractSyntaxTree leftHandSide,
+      final OperatorToken operatorToken,
+      final AbstractSyntaxTree rightHandSide
+  ) {
+    if (leftHandSide.hasLowerPriorityThan(operatorToken) && !leftHandSide.isBracketed()) {
+      return leftHandSide.withReplacedRightChild(operatorToken, rightHandSide);
     }
-    return AbstractSyntaxTree.node(leftHandSide, token, parseValue(), false);
+    return AbstractSyntaxTree.node(leftHandSide, operatorToken, rightHandSide, false);
   }
 
 }

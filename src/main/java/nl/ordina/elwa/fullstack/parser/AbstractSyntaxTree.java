@@ -27,11 +27,10 @@ public final class AbstractSyntaxTree {
         3   5   4
    */
 
-  private final AbstractSyntaxTree leftChild;
-  private final AbstractSyntaxTree rightChild;
-  private final Token token;
-  @Getter
-  private final boolean bracketed;
+  @Getter private final AbstractSyntaxTree leftChild;
+  @Getter private final AbstractSyntaxTree rightChild;
+  @Getter private final Token token;
+  @Getter private final boolean bracketed;
 
   /**
    * Construct a leaf node that holds a {@link NumberToken number token}.
@@ -111,6 +110,8 @@ public final class AbstractSyntaxTree {
    *   <li>the given token ({@code rightToken}) as its token;</li>
    *   <li>the given node ({@code rightGrandChild}) as its right child.</li>
    * </ul>
+   * Neither the returned node nor its right child will be marked as {@link #isBracketed()
+   * bracketed}.
    */
   public AbstractSyntaxTree withReplacedRightChild(
       final Token rightToken, final AbstractSyntaxTree rightGrandChild
@@ -132,4 +133,11 @@ public final class AbstractSyntaxTree {
     return leftChild == null;
   }
 
+  @Override
+  public String toString() {
+    if (isLeaf()) {
+      return token.toString();
+    }
+    return "%s %s %s".formatted(leftChild.toString(), token.toString(), rightChild.toString());
+  }
 }

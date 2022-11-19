@@ -36,5 +36,20 @@ increasing levels of complexity.
     change?
     - Now your calculator should be able to compute that `(1 + 2) * 3 = 9` (and
       not `7`).
+  - **V8**: add implicit multiplication to your **V7** calculator. That is,
+    parse `2(3)` as if it said `2*(3)` and solve to `6`.
+    - This is tricky to get right, so no worries if this takes a while or if you
+      do not want to finish this version, or if you do not get all corner cases
+      to behave as you would like.
+    - Think of cases like `(1)(2)(3)` and also `1(2)3(4(5))`.
+    - You can take a peek at the `CalculatorTest` file in this repository to
+      find more edge cases. 
 
-This repository contains an example implementation of a **V7** calculator.
+This repository contains an example implementation of a **V8** calculator.
+
+
+## Contributing
+
+This repository is by no means perfect, so contributions are welcome. Feel free
+to open a merge request for relatively small changes. Please open an issue to
+discuss before you engage in large refactoring or adding large features.

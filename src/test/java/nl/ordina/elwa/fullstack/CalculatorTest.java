@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class CalculatorTest {
 
@@ -90,7 +91,13 @@ class CalculatorTest {
         Arguments.of("(42)", "42"),
         Arguments.of("(12 + 21)", "33"),
         Arguments.of("(1 + 3) * 2", "8"),
-        Arguments.of("14 - ((1 + 3) * 3)", "2")
+        Arguments.of("14 - ((1 + 3) * 3)", "2"),
+        Arguments.of("(1 + 3) 2", "8"),
+        Arguments.of("2 (1 + 3)", "8"),
+        Arguments.of("(2(1+3)4)", "32"),
+        Arguments.of("1 + 2(4 / 8)", "2"),
+        Arguments.of("5040 - 2(3)(4(5)(6)7)", "0"),
+        Arguments.of("1 + (2)3", "7")
     );
   }
 
@@ -162,16 +169,17 @@ class CalculatorTest {
         Arguments.of("a", "Cannot parse [a] into a valid token", 0),
         Arguments.of("+", "Expected a number or opening bracket", 0),
         Arguments.of(")", "Expected a number or opening bracket", 0),
-        Arguments.of("(1(", "Expected a closing bracket, got opening bracket", 2),
         Arguments.of("1.0.", "Invalid number: multiple points", 3),
         Arguments.of("1++1", "Unknown operator [++]", 1),
-        Arguments.of("1 1", "Expected an operator, got [1]", 2)
+        Arguments.of("1 1", "Expected an operator, got [1]", 2),
+        Arguments.of("(1)2 3", "Expected an operator, got [3]", 5)
     );
   }
 
-  @Test
-  void printsErrorMessageWithoutIndexOnInvalidProblem() {
-    val calculator = getCalculatorThatSolves("1+");
+  @ParameterizedTest
+  @ValueSource(strings = {"1+", "(1("})
+  void printsErrorMessageWithoutIndexOnInvalidProblem(final String problem) {
+    val calculator = getCalculatorThatSolves(problem);
 
     val exception = assertThrows(CalculatorException.class, calculator::compute);
 
@@ -183,7 +191,7 @@ class CalculatorTest {
     );
     assertEquals(2, CALCULATOR_LOGS.getLogs().size());
     assertThat(CALCULATOR_LOGS.getErrorLogs(), contains(
-        "Cannot solve [1+]: %s".formatted(expectedMessage)
+        "Cannot solve [%s]: %s".formatted(problem, expectedMessage)
     ));
   }
 
