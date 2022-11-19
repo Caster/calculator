@@ -3,7 +3,9 @@ package nl.ordina.elwa.fullstack.parser;
 import static nl.ordina.elwa.fullstack.parser.AbstractSyntaxTree.leaf;
 import static nl.ordina.elwa.fullstack.parser.AbstractSyntaxTree.node;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.Stream;
 import lombok.val;
@@ -18,6 +20,22 @@ import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class AbstractSyntaxTreeTest {
+
+  @Test
+  void canGetProperties() {
+    val leftChild = AbstractSyntaxTree.leaf(Token.of(Type.NUMBER, "21", 0));
+    val token = Token.of(Type.OPERATOR, "*", 2);
+    val rightChild = AbstractSyntaxTree.leaf(Token.of(Type.NUMBER, "2", 3));
+    val node = AbstractSyntaxTree.node(leftChild, token, rightChild, true);
+
+    assertEquals("21", leftChild.toString());
+
+    assertSame(leftChild, node.getLeftChild());
+    assertSame(token, node.getToken());
+    assertSame(rightChild, node.getRightChild());
+    assertTrue(node.isBracketed());
+    assertEquals("21 * 2", node.toString());
+  }
 
   @ParameterizedTest
   @EnumSource(value = Type.class, names = {"NUMBER"}, mode = Mode.EXCLUDE)
