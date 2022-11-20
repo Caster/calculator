@@ -2,6 +2,7 @@ package nl.ordina.elwa.fullstack.lexer;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.ToDoubleBiFunction;
@@ -19,6 +20,8 @@ public final class Operator implements ToDoubleBiFunction<AbstractSyntaxTree, Ab
   private final int priority;
   private final DoubleBinaryOperator operation;
 
+  private static final DoubleBinaryOperator ROOT_EXTRACTION = (a, b) -> Math.pow(b, 1.0 / a);
+
   /**
    * List of known/implemented operators.
    */
@@ -27,12 +30,20 @@ public final class Operator implements ToDoubleBiFunction<AbstractSyntaxTree, Ab
       new Operator("-", 1, (a, b) -> a - b),
       new Operator("*", 2, (a, b) -> a * b),
       new Operator("/", 2, (a, b) -> a / b),
-      new Operator("**", 3, Math::pow)
+      new Operator("**", 3, Math::pow),
+      new Operator("root", 3, ROOT_EXTRACTION),
+      new Operator("√", 3, ROOT_EXTRACTION)
   );
 
-  public static boolean isOperator(final char character) {
-    return OPERATORS.stream()
-        .anyMatch(operator -> operator.value.equals(String.valueOf(character)));
+  private static final List<Character> OPERATOR_CHARACTERS = OPERATORS.stream()
+      .flatMapToInt(operator -> operator.getValue().chars())
+      .sorted()
+      .distinct()
+      .mapToObj(c -> (char) c)
+      .toList();
+
+  public static boolean isOperatorCharacter(final char character) {
+    return Collections.binarySearch(OPERATOR_CHARACTERS, character) >= 0;
   }
 
   /**

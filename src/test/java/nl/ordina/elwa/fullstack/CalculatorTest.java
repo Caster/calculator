@@ -101,7 +101,13 @@ class CalculatorTest {
         Arguments.of("3 ** 4", "81"),
         Arguments.of("2 * 3 ** 4 / 2", "81"),
         Arguments.of("(1 + 3) ** (4 / 2)", "16"),
-        Arguments.of("1 + (3)2 ** (4)2", "97")
+        Arguments.of("1 + (3)2 ** (4)2", "97"),
+        Arguments.of("2 root 4", "2"),
+        Arguments.of("3 root 8", "2"),
+        Arguments.of("2 root 2", "1.41421"),
+        Arguments.of("6√729", "3"),
+        Arguments.of("6√(700 + 29)", "3"),
+        Arguments.of("1 + (3)2√(4)2", "13")
     );
   }
 
