@@ -102,32 +102,6 @@ public final class AbstractSyntaxTree {
     return (thisOperator.comparePriorityTo(thatOperator) > 0);
   }
 
-  /**
-   * Return a new node that has the same left child and token as this node, but a new right child.
-   * The newly constructed right child will have:
-   * <ul>
-   *   <li>this node's right child as its left child;</li>
-   *   <li>the given token ({@code rightToken}) as its token;</li>
-   *   <li>the given node ({@code rightGrandChild}) as its right child.</li>
-   * </ul>
-   * Neither the returned node nor its right child will be marked as {@link #isBracketed()
-   * bracketed}.
-   */
-  public AbstractSyntaxTree withReplacedRightChild(
-      final Token rightToken, final AbstractSyntaxTree rightGrandChild
-  ) {
-    return node(
-        leftChild,
-        token,
-        node(
-            rightChild,
-            rightToken,
-            rightGrandChild,
-            false
-        ),
-        false
-    );
-  }
 
   private boolean isLeaf() {
     return leftChild == null;

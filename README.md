@@ -43,9 +43,14 @@ increasing levels of complexity.
       to behave as you would like.
     - Think of cases like `(1)(2)(3)` and also `1(2)3(4(5))`.
     - You can take a peek at the `CalculatorTest` file in this repository to
-      find more edge cases. 
+      find more edge cases.
+  - **V9**: add exponentiation to your **V8** (or **V7** if you skipped **V8**)
+    calculator. You can use for example `**` or `^` as an operator; using two
+    characters might be more challenging, depending on how you implemented your
+    calculator so far.
+    - Think of order of operations.
 
-This repository contains an example implementation of a **V8** calculator.
+This repository contains an example implementation of a **V9** calculator.
 
 
 ## Contributing

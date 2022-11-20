@@ -67,7 +67,7 @@ public final class Parser {
     if (token.getType() != Type.OPERATOR) {
       if (leftHandSide.isBracketed() || (
             leftHandSide.getToken().getType() == Type.OPERATOR
-            && leftHandSide.getRightChild().isBracketed()
+            && getRightMostBracketedLeaf(leftHandSide).isBracketed()
           )) {
         tokensLeft.push(token);
         return buildNode(
@@ -84,13 +84,25 @@ public final class Parser {
     return buildNode(leftHandSide, (OperatorToken) token, parseValue());
   }
 
+  private AbstractSyntaxTree getRightMostBracketedLeaf(AbstractSyntaxTree node) {
+    while (!node.isBracketed() && node.getRightChild() != null) {
+      node = node.getRightChild();
+    }
+    return node;
+  }
+
   private AbstractSyntaxTree buildNode(
       final AbstractSyntaxTree leftHandSide,
       final OperatorToken operatorToken,
       final AbstractSyntaxTree rightHandSide
   ) {
     if (leftHandSide.hasLowerPriorityThan(operatorToken) && !leftHandSide.isBracketed()) {
-      return leftHandSide.withReplacedRightChild(operatorToken, rightHandSide);
+      return AbstractSyntaxTree.node(
+          leftHandSide.getLeftChild(),
+          leftHandSide.getToken(),
+          buildNode(leftHandSide.getRightChild(), operatorToken, rightHandSide),
+          leftHandSide.isBracketed()
+      );
     }
     return AbstractSyntaxTree.node(leftHandSide, operatorToken, rightHandSide, false);
   }
