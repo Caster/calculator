@@ -97,7 +97,11 @@ class CalculatorTest {
         Arguments.of("(2(1+3)4)", "32"),
         Arguments.of("1 + 2(4 / 8)", "2"),
         Arguments.of("5040 - 2(3)(4(5)(6)7)", "0"),
-        Arguments.of("1 + (2)3", "7")
+        Arguments.of("1 + (2)3", "7"),
+        Arguments.of("3 ** 4", "81"),
+        Arguments.of("2 * 3 ** 4 / 2", "81"),
+        Arguments.of("(1 + 3) ** (4 / 2)", "16"),
+        Arguments.of("1 + (3)2 ** (4)2", "97")
     );
   }
 
