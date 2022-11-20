@@ -4,6 +4,8 @@ This project is an example implementation of a simple CLI calculator. It is
 meant to be part of a tutoring project where a learner develops a calculator in
 increasing levels of complexity.
 
+**Starting off**
+
   - **V1**: a CLI app that asks for two numbers and prints their sum.
     - Keep in mind how you can test your code from the start. Write unit tests.
     - How do you handle invalid input?
@@ -16,6 +18,9 @@ increasing levels of complexity.
     - Keep those unit tests in mind! Does your program also understand `2 + 4`?
     - Start with a single addition, then work towards implementing multiple
       additions such as `1 + 2 + 3 + 4`.
+
+**Ramping up difficulty**
+
   - **V3**: add subtraction to your **V2** calculator. How much code do you need
     to change?
     - This might also be a good time to implement negative integers.
@@ -23,7 +28,8 @@ increasing levels of complexity.
     - Does your code understand `-4 -1`? Should it?
   - **V4**: add multiplication to your **V3** calculator. Be mindful of order of
     operations! How much code do you need to change?
-    - Check that `3 + 2 * 5 = 13`, not `25`. 
+    - Check that `3 + 2 * 5 = 13`, not `25`.
+    - Does your code understand `-3 * -4 = 12` too?
   - **V5**: add division to your **V4** calculator. How much code do you need to
     change?
     - Initially you can have your calculator print `8 / 3 = 3`, but it might be
@@ -31,11 +37,16 @@ increasing levels of complexity.
   - **V6**: add rational numbers to your **V5** calculator. How much code do you
     need to change?
     - Now your calculator should be able to compute that `0.5 * 4 = 2`.
-    - Does your code understand `-3 * -4 = 12` too?
+
+**Getting into a pickle**
+
   - **V7**: add brackets to your **V6** calculator. How much code do you need to
     change?
     - Now your calculator should be able to compute that `(1 + 2) * 3 = 9` (and
       not `7`).
+
+**Advanced challenges**
+
   - **V8**: add implicit multiplication to your **V7** calculator. That is,
     parse `2(3)` as if it said `2*(3)` and solve to `6`.
     - This is tricky to get right, so no worries if this takes a while or if you
@@ -49,8 +60,14 @@ increasing levels of complexity.
     characters might be more challenging, depending on how you implemented your
     calculator so far.
     - Think of order of operations.
+  - **V10**: add root extraction to your **V9** calculator. You can use full on
+    `root` as an operator or the Unicode character `√` (or both, if you want,
+    like this example implementation). It can work as `2√4 = 2` and `3√27 = 3`,
+    so that it is still a binary operator.
+    - Bonus points if you implement a unary square root operator (let's call
+      that `sqrt`). This example implementation does not (yet).
 
-This repository contains an example implementation of a **V9** calculator.
+This repository contains an example implementation of a **V10** calculator.
 
 
 ## Contributing

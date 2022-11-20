@@ -11,8 +11,9 @@ class OperatorTest {
 
   @Test
   void isOperator() {
-    assertTrue(Operator.isOperator('+'));
-    assertFalse(Operator.isOperator('a'));
+    assertTrue(Operator.isOperatorCharacter('+'));
+    assertTrue(Operator.isOperatorCharacter('√'));
+    assertFalse(Operator.isOperatorCharacter('a'));
   }
 
   @Test

@@ -55,7 +55,7 @@ public final class Lexer {
     if (Character.isDigit(character) || character == '.') {
       return Type.NUMBER;
     }
-    if (Operator.isOperator(character)) {
+    if (Operator.isOperatorCharacter(character)) {
       return Type.OPERATOR;
     }
     if (character == '(' || character == ')') {
