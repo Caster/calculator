@@ -44,7 +44,23 @@ public final class AbstractSyntaxTree {
   }
 
   /**
-   * Construct an internal or root node that holds an {@link OperatorToken operator token}.
+   * Construct an internal or root node with one child, that holds an {@link OperatorToken operator
+   * token}.
+   */
+  public static AbstractSyntaxTree node(
+      @NonNull final Token token,
+      @NonNull final AbstractSyntaxTree child,
+      final boolean bracketed
+  ) {
+    if (token.getType() != Type.OPERATOR) {
+      throw new CalculatorException("Can only have operators as nodes of an AST", token.getIndex());
+    }
+    return new AbstractSyntaxTree(child, null, token, bracketed);
+  }
+
+  /**
+   * Construct an internal or root node with two children, that holds an {@link OperatorToken
+   * operator token}.
    */
   public static AbstractSyntaxTree node(
       @NonNull final AbstractSyntaxTree leftChild,
@@ -86,6 +102,9 @@ public final class AbstractSyntaxTree {
     if (isLeaf()) {
       return ((NumberToken) token).getValue();
     }
+    if (rightChild == null) {
+      return ((OperatorToken) token).applyOperator(leftChild);
+    }
     return ((OperatorToken) token).applyOperator(leftChild, rightChild);
   }
 
@@ -103,8 +122,7 @@ public final class AbstractSyntaxTree {
     return (thisOperator.comparePriorityTo(thatOperator) > 0);
   }
 
-
-  private boolean isLeaf() {
+  public boolean isLeaf() {
     return leftChild == null;
   }
 

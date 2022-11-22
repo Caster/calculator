@@ -20,6 +20,7 @@ public final class Operators {
       new BinaryOperator("*", 2, (a, b) -> a * b),
       new BinaryOperator("/", 2, (a, b) -> a / b),
       new BinaryOperator("**", 3, Math::pow),
+      new UnaryOperator("sqrt", 3, a -> ROOT_EXTRACTION.applyAsDouble(2.0, a)),
       new BinaryOperator("root", 3, ROOT_EXTRACTION),
       new BinaryOperator("√", 3, ROOT_EXTRACTION)
   );

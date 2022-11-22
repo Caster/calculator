@@ -9,7 +9,7 @@ import nl.ordina.elwa.fullstack.exception.CalculatorException;
 import nl.ordina.elwa.fullstack.parser.AbstractSyntaxTree;
 
 @RequiredArgsConstructor(access = PROTECTED)
-public sealed class Operator permits BinaryOperator {
+public sealed class Operator permits BinaryOperator, UnaryOperator {
 
   @Getter
   private final String value;
