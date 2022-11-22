@@ -1,19 +1,21 @@
 package nl.ordina.elwa.fullstack.lexer;
 
-import static nl.ordina.elwa.fullstack.lexer.Operator.OPERATORS;
+import static nl.ordina.elwa.fullstack.lexer.operator.Operators.OPERATORS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import nl.ordina.elwa.fullstack.lexer.operator.Operator;
+import nl.ordina.elwa.fullstack.lexer.operator.Operators;
 import org.junit.jupiter.api.Test;
 
-class OperatorTest {
+class OperatorsTest {
 
   @Test
   void isOperator() {
-    assertTrue(Operator.isOperatorCharacter('+'));
-    assertTrue(Operator.isOperatorCharacter('√'));
-    assertFalse(Operator.isOperatorCharacter('a'));
+    assertTrue(Operators.isOperatorCharacter('+'));
+    assertTrue(Operators.isOperatorCharacter('√'));
+    assertFalse(Operators.isOperatorCharacter('a'));
   }
 
   @Test

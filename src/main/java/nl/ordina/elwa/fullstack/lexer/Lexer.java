@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.ObjIntConsumer;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
+import nl.ordina.elwa.fullstack.lexer.operator.Operators;
 import nl.ordina.elwa.fullstack.lexer.token.NumberToken;
 import nl.ordina.elwa.fullstack.lexer.token.OperatorToken;
 import nl.ordina.elwa.fullstack.lexer.token.Token;
@@ -55,7 +56,7 @@ public final class Lexer {
     if (Character.isDigit(character) || character == '.') {
       return Type.NUMBER;
     }
-    if (Operator.isOperatorCharacter(character)) {
+    if (Operators.isOperatorCharacter(character)) {
       return Type.OPERATOR;
     }
     if (character == '(' || character == ')') {

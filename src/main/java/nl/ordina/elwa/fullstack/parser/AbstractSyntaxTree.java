@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
+import nl.ordina.elwa.fullstack.lexer.operator.BinaryOperator;
 import nl.ordina.elwa.fullstack.lexer.token.NumberToken;
 import nl.ordina.elwa.fullstack.lexer.token.OperatorToken;
 import nl.ordina.elwa.fullstack.lexer.token.Token;
@@ -77,7 +78,7 @@ public final class AbstractSyntaxTree {
 
   /**
    * Return either the {@link NumberToken#getValue() value} if this is a leaf node, or the result
-   * of {@link nl.ordina.elwa.fullstack.lexer.Operator#applyAsDouble(AbstractSyntaxTree,
+   * of {@link BinaryOperator#applyAsDouble(AbstractSyntaxTree,
    * AbstractSyntaxTree) applying} the operator to the two child nodes (recursively) if this is an
    * internal or root node.
    */
@@ -85,7 +86,7 @@ public final class AbstractSyntaxTree {
     if (isLeaf()) {
       return ((NumberToken) token).getValue();
     }
-    return ((OperatorToken) token).getOperator().applyAsDouble(leftChild, rightChild);
+    return ((OperatorToken) token).applyOperator(leftChild, rightChild);
   }
 
   /**
