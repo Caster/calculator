@@ -57,6 +57,18 @@ class AbstractSyntaxTreeTest {
 
   @ParameterizedTest
   @EnumSource(value = Type.class, names = {"OPERATOR"}, mode = Mode.EXCLUDE)
+  void throwsOnInvalidSingleChildNode(final Type invalidType) {
+    val token = Token.of(invalidType, "1", 42);
+    val tree = leaf(Token.of(Type.NUMBER, "1", 0));
+
+    val exception = assertThrows(CalculatorException.class, () -> node(token, tree, false));
+
+    assertEquals("Can only have operators as nodes of an AST", exception.getMessage());
+    assertEquals(42, exception.getProblemIndex());
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = Type.class, names = {"OPERATOR"}, mode = Mode.EXCLUDE)
   void throwsOnInvalidNode(final Type invalidType) {
     val token = Token.of(invalidType, "1", 42);
     val tree = leaf(Token.of(Type.NUMBER, "1", 0));
@@ -65,6 +77,27 @@ class AbstractSyntaxTreeTest {
 
     assertEquals("Can only have operators as nodes of an AST", exception.getMessage());
     assertEquals(42, exception.getProblemIndex());
+  }
+
+  @ParameterizedTest
+  @MethodSource("singleChildNodeNullArgumentsProvider")
+  void throwsOnNullSingleChildNode(
+      final Token token, final AbstractSyntaxTree child, final String expectedMessage
+  ) {
+    val exception = assertThrows(
+        NullPointerException.class,
+        () -> node(token, child, false)
+    );
+    assertEquals(expectedMessage, exception.getMessage());
+  }
+
+  static Stream<Arguments> singleChildNodeNullArgumentsProvider() {
+    val token = Token.of(Type.NUMBER, "1", 42);
+    val tree = leaf(token);
+    return Stream.of(
+        Arguments.of(null, tree, "token is marked non-null but is null"),
+        Arguments.of(token, null, "child is marked non-null but is null")
+    );
   }
 
   @ParameterizedTest

@@ -107,7 +107,12 @@ class CalculatorTest {
         Arguments.of("2 root 2", "1.41421"),
         Arguments.of("6√729", "3"),
         Arguments.of("6√(700 + 29)", "3"),
-        Arguments.of("1 + (3)2√(4)2", "13")
+        Arguments.of("1 + (3)2√(4)2", "13"),
+        Arguments.of("sqrt 16", "4"),
+        Arguments.of("2√4 * sqrt 16 + 3", "11"),
+        Arguments.of("1 + (3)sqrt(4)2", "13"),
+        Arguments.of("∛27", "3"),
+        Arguments.of("∜256", "4")
     );
   }
 

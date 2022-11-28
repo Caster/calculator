@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
+import nl.ordina.elwa.fullstack.lexer.operator.UnaryOperator;
 import nl.ordina.elwa.fullstack.lexer.token.BracketToken;
 import nl.ordina.elwa.fullstack.lexer.token.OperatorToken;
 import nl.ordina.elwa.fullstack.lexer.token.Token;
@@ -51,6 +52,10 @@ public final class Parser {
       nextToken(); // Remove closing bracket; needs no check, otherwise parse() would've failed.
       return expression;
     }
+    if (token.getType() == Type.OPERATOR
+        && ((OperatorToken) token).getOperator() instanceof UnaryOperator) {
+      return AbstractSyntaxTree.node(token, parseValue(), false);
+    }
     throw new CalculatorException("Expected a number or opening bracket", token.getIndex());
   }
 
@@ -64,7 +69,7 @@ public final class Parser {
 
   private AbstractSyntaxTree parseExpression(final AbstractSyntaxTree leftHandSide) {
     val token = nextToken();
-    if (token.getType() != Type.OPERATOR) {
+    if (token.getType() != Type.OPERATOR || !((OperatorToken) token).isBinary()) {
       if (leftHandSide.isBracketed() || (
             leftHandSide.getToken().getType() == Type.OPERATOR
             && getRightMostBracketedLeaf(leftHandSide).isBracketed()
@@ -85,8 +90,12 @@ public final class Parser {
   }
 
   private AbstractSyntaxTree getRightMostBracketedLeaf(AbstractSyntaxTree node) {
-    while (!node.isBracketed() && node.getRightChild() != null) {
-      node = node.getRightChild();
+    while (!node.isBracketed() && !node.isLeaf()) {
+      if (node.getRightChild() == null) {
+        node = node.getLeftChild();
+      } else {
+        node = node.getRightChild();
+      }
     }
     return node;
   }

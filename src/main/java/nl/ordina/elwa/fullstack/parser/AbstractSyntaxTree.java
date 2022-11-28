@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
+import nl.ordina.elwa.fullstack.lexer.operator.BinaryOperator;
 import nl.ordina.elwa.fullstack.lexer.token.NumberToken;
 import nl.ordina.elwa.fullstack.lexer.token.OperatorToken;
 import nl.ordina.elwa.fullstack.lexer.token.Token;
@@ -43,7 +44,23 @@ public final class AbstractSyntaxTree {
   }
 
   /**
-   * Construct an internal or root node that holds an {@link OperatorToken operator token}.
+   * Construct an internal or root node with one child, that holds an {@link OperatorToken operator
+   * token}.
+   */
+  public static AbstractSyntaxTree node(
+      @NonNull final Token token,
+      @NonNull final AbstractSyntaxTree child,
+      final boolean bracketed
+  ) {
+    if (token.getType() != Type.OPERATOR) {
+      throw new CalculatorException("Can only have operators as nodes of an AST", token.getIndex());
+    }
+    return new AbstractSyntaxTree(child, null, token, bracketed);
+  }
+
+  /**
+   * Construct an internal or root node with two children, that holds an {@link OperatorToken
+   * operator token}.
    */
   public static AbstractSyntaxTree node(
       @NonNull final AbstractSyntaxTree leftChild,
@@ -77,7 +94,7 @@ public final class AbstractSyntaxTree {
 
   /**
    * Return either the {@link NumberToken#getValue() value} if this is a leaf node, or the result
-   * of {@link nl.ordina.elwa.fullstack.lexer.Operator#applyAsDouble(AbstractSyntaxTree,
+   * of {@link BinaryOperator#applyAsDouble(AbstractSyntaxTree,
    * AbstractSyntaxTree) applying} the operator to the two child nodes (recursively) if this is an
    * internal or root node.
    */
@@ -85,7 +102,10 @@ public final class AbstractSyntaxTree {
     if (isLeaf()) {
       return ((NumberToken) token).getValue();
     }
-    return ((OperatorToken) token).getOperator().applyAsDouble(leftChild, rightChild);
+    if (rightChild == null) {
+      return ((OperatorToken) token).applyOperator(leftChild);
+    }
+    return ((OperatorToken) token).applyOperator(leftChild, rightChild);
   }
 
   /**
@@ -102,8 +122,7 @@ public final class AbstractSyntaxTree {
     return (thisOperator.comparePriorityTo(thatOperator) > 0);
   }
 
-
-  private boolean isLeaf() {
+  public boolean isLeaf() {
     return leftChild == null;
   }
 
