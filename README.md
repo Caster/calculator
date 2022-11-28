@@ -65,9 +65,10 @@ increasing levels of complexity.
     like this example implementation). It can work as `2√4 = 2` and `3√27 = 3`,
     so that it is still a binary operator.
     - Bonus points if you implement a unary square root operator (let's call
-      that `sqrt`). This example implementation does not (yet).
+      that `sqrt`).
 
-This repository contains an example implementation of a **V10** calculator.
+This repository contains an example implementation of a **V10** calculator with
+unary operator support.
 
 
 ## Contributing
