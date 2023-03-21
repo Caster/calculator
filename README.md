@@ -67,9 +67,17 @@ increasing levels of complexity.
     - Bonus points if you implement a unary square root operator (let's call
       that `sqrt`).
 
-This repository contains an example implementation of a **V10** calculator with
-unary operator support.
+## Repository contents
 
+This repository will contain an example implementation of a **V10** calculator
+with unary operator support. Furthermore, it will contain all other versions
+described above in earlier commits. To make this more clear, every commit that
+makes the implementation reach the next version is tagged. This makes it easy to
+browse an example implementation for every version, especially in GitHub.
+
+This particular commit contains **no implementation** yet. It is the first
+commit and only has some scaffolding: this file, GitHub workflows, a `pom.xml`
+with dependencies and some other Maven configuration.
 
 ## Contributing
 
