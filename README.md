@@ -75,9 +75,7 @@ described above in earlier commits. To make this more clear, every commit that
 makes the implementation reach the next version is tagged. This makes it easy to
 browse an example implementation for every version, especially in GitHub.
 
-This particular commit contains **no implementation** yet. It is the first
-commit and only has some scaffolding: this file, GitHub workflows, a `pom.xml`
-with dependencies and some other Maven configuration.
+This particular commit contains a **V1** implementation.
 
 ## Contributing
 

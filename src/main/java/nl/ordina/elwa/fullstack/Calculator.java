@@ -1,7 +1,6 @@
 package nl.ordina.elwa.fullstack;
 
 import static java.util.Optional.ofNullable;
-import static nl.ordina.elwa.fullstack.lexer.token.NumberToken.format;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,18 +9,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.text.DecimalFormat;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
-import nl.ordina.elwa.fullstack.lexer.Lexer;
-import nl.ordina.elwa.fullstack.parser.Parser;
 
 @Slf4j
 public final class Calculator {
 
+  private static final DecimalFormat FORMAT = new DecimalFormat("#.#####");
+
+  private static String format(final double number) {
+    return FORMAT.format(number);
+  }
+
   private final BufferedReader input;
   private final BufferedWriter output;
-  private final Lexer lexer;
 
   /**
    * Construct a calculator that will read its input from the given {@link Reader} and will write
@@ -30,45 +33,23 @@ public final class Calculator {
   public Calculator(final Reader input, final Writer output) {
     this.input = new BufferedReader(input);
     this.output = new BufferedWriter(output);
-    this.lexer = new Lexer();
   }
 
   /**
-   * Write a prompt, read a problem, compute and write the solution.
+   * Write a prompt and read two numbers, add them together and print the result.
    */
   public void compute() {
-    write("> ");
-    val problem = read();
-    if ("quit".equals(problem)) {
-      throw new CalculatorException("quit");
-    }
-    log.info("Solving [%s]...".formatted(problem));
+    write("Input 1? ");
+    val input1 = Double.parseDouble(read());
+    write("Input 2? ");
+    val input2 = Double.parseDouble(read());
+    log.info("Solving [%s + %s]...".formatted(format(input1), format(input2)));
 
-    try {
-      val tokens = lexer.lex(problem);
-      if (tokens.size() == 0) {
-        log.info("Computed [%s] = []".formatted(problem));
-        return;
-      }
-
-      val syntaxTree = new Parser(tokens).parse();
-      final double solution = syntaxTree.compute();
-      write("%s%n".formatted(format(solution)));
-      log.info("Computed [%s] = [%s]".formatted(problem, format(solution)));
-    } catch (final CalculatorException ce) {
-      log.error("Cannot solve [%s]: %s".formatted(problem, ce.getMessage()));
-      if (!(ce.getCause() instanceof IOException)) {
-        if (ce.getProblemIndex() >= 0) {
-          write("%s┗ %s%n".formatted(
-              " ".repeat(2 + ce.getProblemIndex()),
-              ce.getMessage()
-          ));
-        } else {
-          write("%s%n".formatted(ce.getMessage()));
-        }
-      }
-      throw ce;
-    }
+    val solution = input1 + input2;
+    write(format(solution));
+    log.info("Computed [%s + %s] = [%s]".formatted(
+        format(input1), format(input2), format(solution)
+    ));
   }
 
   private String read() {
@@ -92,22 +73,14 @@ public final class Calculator {
   }
 
   /**
-   * Run a calculator, letting it {@link #compute()} until it encounters an error or quits.
+   * Run a calculator, letting it {@link #compute()} using standard input and output.
    */
-  @SuppressWarnings({"java:S106", "java:S2189"})
   public static void main(String... args) {
+    @SuppressWarnings("java:S106")
     val calculator = new Calculator(
         new InputStreamReader(System.in), new OutputStreamWriter(System.out)
     );
-    while (true) {
-      try {
-        calculator.compute();
-      } catch (final CalculatorException ce) {
-        if ("quit".equals(ce.getMessage())) {
-          break;
-        }
-      }
-    }
+    calculator.compute();
   }
 
 }
