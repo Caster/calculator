@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.OptionalDouble;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
@@ -39,36 +41,30 @@ public final class Calculator {
    * Write a prompt and read two numbers, add them together and print the result.
    */
   public void compute() {
-    write("Input 1? ");
-    val optionalInput1 = readDouble();
-    if (optionalInput1.isEmpty()) {
-      return;
-    }
-    val input1 = optionalInput1.getAsDouble();
-    write("Input 2? ");
-    val optionalInput2 = readDouble();
-    if (optionalInput2.isEmpty()) {
-      return;
-    }
-    val input2 = optionalInput2.getAsDouble();
-    log.info("Solving [%s + %s]...".formatted(format(input1), format(input2)));
+    write("> ");
+    val problem = read();
+    log.info("Solving [%s]...".formatted(problem));
 
-    val solution = input1 + input2;
+    val hasError = new AtomicBoolean();
+    val solution = Arrays.stream(problem.split("\\s*\\+\\s*"))
+        .map(this::readDouble)
+        .filter(optionalDouble -> {
+          if (optionalDouble.isPresent()) {
+            return true;
+          }
+          hasError.set(true);
+          return false;
+        })
+        .map(OptionalDouble::getAsDouble)
+        .reduce(Double::sum)
+        .get();
+    if (hasError.get()) {
+      return;
+    }
     write(format(solution) + "\n");
-    log.info("Computed [%s + %s] = [%s]".formatted(
-        format(input1), format(input2), format(solution)
+    log.info("Computed [%s] = [%s]".formatted(
+        problem, format(solution)
     ));
-  }
-
-  private OptionalDouble readDouble() {
-    val inputLine = read();
-    try {
-      return OptionalDouble.of(parseDouble(inputLine));
-    } catch (final NumberFormatException nfe) {
-      log.error("Invalid input");
-      write("Cannot parse [%s] as a number.%n".formatted(inputLine));
-      return OptionalDouble.empty();
-    }
   }
 
   private String read() {
@@ -76,6 +72,16 @@ public final class Calculator {
       return ofNullable(input.readLine()).orElse("");
     } catch (final IOException ioe) {
       throw new CalculatorException("Could not read input", ioe);
+    }
+  }
+
+  private OptionalDouble readDouble(final String input) {
+    try {
+      return OptionalDouble.of(parseDouble(input));
+    } catch (final NumberFormatException nfe) {
+      log.error("Invalid input");
+      write("Cannot parse [%s] as a number.%n".formatted(input));
+      return OptionalDouble.empty();
     }
   }
 
