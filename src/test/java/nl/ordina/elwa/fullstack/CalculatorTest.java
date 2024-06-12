@@ -1,6 +1,5 @@
 package nl.ordina.elwa.fullstack;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,14 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.Console;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -130,22 +129,17 @@ class CalculatorTest {
   }
 
   @Test
-  void canRunAsMain() throws IOException {
-    final InputStream defaultSystemIn = System.in;
-    final PrintStream defaultSystemOut = System.out;
-    try (
-        val byteArrayInputStream = new ByteArrayInputStream("40\n2\n".getBytes(UTF_8));
-        val byteArrayOutputStream = new ByteArrayOutputStream()
-    ) {
-      System.setIn(byteArrayInputStream);
-      System.setOut(new PrintStream(byteArrayOutputStream));
+  void canRunAsMain() {
+    try (val consoleProviderMock = mockStatic(ConsoleProvider.class)) {
+      val consoleMock = mock(Console.class);
+      doReturn(new StringReader("40\n2\n")).when(consoleMock).reader();
+      val outputWriter = new StringWriter();
+      doReturn(new PrintWriter(outputWriter)).when(consoleMock).writer();
+      consoleProviderMock.when(ConsoleProvider::getConsole).thenReturn(consoleMock);
 
       Calculator.main();
 
-      assertEquals("Input 1? Input 2? 42\n", byteArrayOutputStream.toString());
-    } finally {
-      System.setOut(defaultSystemOut);
-      System.setIn(defaultSystemIn);
+      assertEquals("Input 1? Input 2? 42\n", outputWriter.toString());
     }
   }
 

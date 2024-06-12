@@ -6,8 +6,6 @@ import static java.util.Optional.ofNullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.text.DecimalFormat;
@@ -97,10 +95,8 @@ public final class Calculator {
    * Run a calculator, letting it {@link #compute()} using standard input and output.
    */
   public static void main(String... args) {
-    @SuppressWarnings("java:S106")
-    val calculator = new Calculator(
-        new InputStreamReader(System.in), new OutputStreamWriter(System.out)
-    );
+    val console = ConsoleProvider.getConsole();
+    val calculator = new Calculator(console.reader(), console.writer());
     calculator.compute();
   }
 
