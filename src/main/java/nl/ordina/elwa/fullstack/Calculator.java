@@ -1,7 +1,7 @@
 package nl.ordina.elwa.fullstack;
 
-import static java.lang.Double.parseDouble;
 import static java.util.Optional.ofNullable;
+import static nl.ordina.elwa.fullstack.parser.Parser.parse;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,12 +9,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.OptionalDouble;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import nl.ordina.elwa.fullstack.exception.CalculatorException;
+import nl.ordina.elwa.fullstack.lexer.Lexer;
 
 @Slf4j
 public final class Calculator {
@@ -27,6 +25,7 @@ public final class Calculator {
 
   private final BufferedReader input;
   private final BufferedWriter output;
+  private final Lexer lexer;
 
   /**
    * Construct a calculator that will read its input from the given {@link Reader} and will write
@@ -35,36 +34,30 @@ public final class Calculator {
   public Calculator(final Reader input, final Writer output) {
     this.input = new BufferedReader(input);
     this.output = new BufferedWriter(output);
+    this.lexer = new Lexer();
   }
 
   /**
-   * Write a prompt and read two numbers, add them together and print the result.
+   * Write a prompt, read a problem, solve it and print the result.
    */
   public void compute() {
     write("> ");
     val problem = read();
     log.info("Solving [%s]...".formatted(problem));
-
-    val hasError = new AtomicBoolean();
-    val solution = Arrays.stream(problem.split("\\s*\\+\\s*"))
-        .map(this::readDouble)
-        .filter(optionalDouble -> {
-          if (optionalDouble.isPresent()) {
-            return true;
-          }
-          hasError.set(true);
-          return false;
-        })
-        .map(OptionalDouble::getAsDouble)
-        .reduce(Double::sum)
-        .get();
-    if (hasError.get()) {
-      return;
+    try {
+      val tokens = lexer.lex(problem);
+      if (tokens.isEmpty()) {
+        return;
+      }
+      val syntaxTree = parse(tokens);
+      val solution = syntaxTree.compute();
+      write(format(solution) + "\n");
+      log.info("Computed [%s] = [%s]".formatted(
+          problem, format(solution)
+      ));
+    } catch (final CalculatorException ce) {
+      write("%s%n".formatted(ce.getMessage()));
     }
-    write(format(solution) + "\n");
-    log.info("Computed [%s] = [%s]".formatted(
-        problem, format(solution)
-    ));
   }
 
   private String read() {
@@ -72,16 +65,6 @@ public final class Calculator {
       return ofNullable(input.readLine()).orElse("");
     } catch (final IOException ioe) {
       throw new CalculatorException("Could not read input", ioe);
-    }
-  }
-
-  private OptionalDouble readDouble(final String input) {
-    try {
-      return OptionalDouble.of(parseDouble(input));
-    } catch (final NumberFormatException nfe) {
-      log.error("Invalid input");
-      write("Cannot parse [%s] as a number.%n".formatted(input));
-      return OptionalDouble.empty();
     }
   }
 

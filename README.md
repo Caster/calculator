@@ -75,7 +75,7 @@ described above in earlier commits. To make this more clear, every commit that
 makes the implementation reach the next version is tagged. This makes it easy to
 browse an example implementation for every version, especially in GitHub.
 
-This particular commit contains a **V2** implementation.
+This particular commit contains a **V3** implementation.
 
 ## Contributing
 

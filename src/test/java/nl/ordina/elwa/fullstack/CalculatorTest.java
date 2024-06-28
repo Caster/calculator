@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class CalculatorTest {
 
@@ -47,6 +48,22 @@ class CalculatorTest {
   }
 
   @ParameterizedTest
+  @ValueSource(strings = {"", " ", "\t"})
+  void canIgnoreBlankInput(final String problem) {
+    val calculator = getCalculatorThatSolves(problem);
+
+    calculator.compute();
+
+    assertEquals(1, CALCULATOR_LOGS.getLogs().size());
+    assertThat(CALCULATOR_LOGS.getInfoLogs(), contains("Solving [%s]...".formatted(problem)));
+    assertEquals("> ", WRITER.toString());
+  }
+
+  private Calculator getCalculatorThatSolves(final String problem) {
+    return new Calculator(new StringReader(problem), WRITER);
+  }
+
+  @ParameterizedTest
   @MethodSource("problemProvider")
   void canSolveProblems(final String problem, final String expectedSolution) {
     val calculator = getCalculatorThatSolves(problem);
@@ -61,15 +78,18 @@ class CalculatorTest {
     assertEquals("> %s%n".formatted(expectedSolution), WRITER.toString());
   }
 
-  private Calculator getCalculatorThatSolves(final String problem) {
-    return new Calculator(new StringReader(problem), WRITER);
-  }
-
   static Stream<Arguments> problemProvider() {
     return Stream.of(
         Arguments.of("1 + 1", "2"),
         Arguments.of("31+11", "42"),
-        Arguments.of("1.5+ 3.25", "4.75")
+        Arguments.of("1.5+ 3.25", "4.75"),
+        Arguments.of("1 + 2 + 3 + 4", "10"),
+        Arguments.of("1 + 2 - 3 + 4", "4"),
+        Arguments.of("-1", "-1"),
+        Arguments.of("1 + -2", "-1"),
+        Arguments.of("1 - -2", "3"),
+        Arguments.of("1--2", "3"),
+        Arguments.of("-4 -1", "-5")
     );
   }
 
@@ -80,15 +100,14 @@ class CalculatorTest {
 
     calculator.compute();
 
-    assertEquals(2, CALCULATOR_LOGS.getLogs().size());
-    assertThat(CALCULATOR_LOGS.getErrorLogs(), contains("Invalid input"));
+    assertEquals(1, CALCULATOR_LOGS.getLogs().size());
     assertEquals("> %s%n".formatted(expectedOutput), WRITER.toString());
   }
 
   static Stream<Arguments> invalidProblemProvider() {
     return Stream.of(
-        Arguments.of("a + 1", "Cannot parse [a] as a number."),
-        Arguments.of("1 + b", "Cannot parse [b] as a number.")
+        Arguments.of("a + 1", "Cannot parse [a] into a valid token"),
+        Arguments.of("1 + b", "Cannot parse [b] into a valid token")
     );
   }
 
